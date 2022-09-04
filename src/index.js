@@ -61,20 +61,12 @@ const inputRef = document.querySelector('input#search-box');
 const ulRef = document.querySelector('.country-list');
 const divRef = document.querySelector('.country-info');
 
-inputRef.addEventListener('input', onSearch);
+inputRef.addEventListener('input', debounce(onSearch, DEBOUNCE_DELAY));
 
 function onSearch(event) {
   event.preventDefault();
   const form = event.currentTarget;
-  const searchCountry = form.value;
-  console.log(
-    'event',
-    event,
-    'event.currentTarget',
-    event.currentTarget,
-    'event.CerrentTarget.value',
-    event.currentTarget.value
-  );
+  const searchCountry = form.value.trim();
   // console.log(searchCountry);
 
   fetchCountries(searchCountry)
@@ -86,7 +78,7 @@ function onSearch(event) {
 }
 
 function renderCountriesList(data) {
-  console.log(data);
+  // console.log(data);
   const markup = data
     .flatMap(dat => {
       if (data.length >= 2 && data.length <= 10) {
@@ -102,6 +94,6 @@ function renderCountriesList(data) {
       }
     })
     .join('');
-  console.log('markup', markup);
+  // console.log('markup', markup);
   ulRef.innerHTML = markup;
 }
