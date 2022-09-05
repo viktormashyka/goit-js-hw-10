@@ -65,9 +65,8 @@ inputRef.addEventListener('input', debounce(onSearch, DEBOUNCE_DELAY));
 
 function onSearch(event) {
   event.preventDefault();
-  const form = event.currentTarget;
-  const searchCountry = form.value.trim();
-  // console.log(searchCountry);
+  const searchCountry = inputRef.value.trim();
+  console.log('input =>', searchCountry);
 
   fetchCountries(searchCountry)
     .then(data => renderCountriesList(data))
@@ -78,22 +77,31 @@ function onSearch(event) {
 }
 
 function renderCountriesList(data) {
-  // console.log(data);
-  const markup = data
-    .flatMap(dat => {
-      if (data.length >= 2 && data.length <= 10) {
+  if (data.length >= 2 && data.length <= 10) {
+    ulRef.innerHTML = data
+      .map(({ flags, name, capital, population, languages }) => {
         return `<li>
-        <p style="font-size:20px; font-weight: 400"><img src="${dat.flags.svg}" alt="Flag" width="50"> ${dat.name.common}</p>
+        <p style="font-size:20px; font-weight: 400"><img src="${flags.svg}" alt="Flag" width="50"> ${name.official}</p>
         </li>`;
-      }
-      if (data.length === 1) {
-        return `<p style="font-size:24px; font-weight: 400"><img src="${dat.flags.svg}" alt="Flag" width="20"> ${dat.name.official}</p>
-                          <p style="font-size:20px; font-weight: 200">Capital: ${dat.capital}</p>
-                          <p style="font-size:20px; font-weight: 200">Population: ${dat.population}</p>
-                          <p style="font-size:20px; font-weight: 200">Languages: ${dat.languages}</p>`;
-      }
-    })
-    .join('');
-  // console.log('markup', markup);
-  ulRef.innerHTML = markup;
+      })
+      .join('');
+  }
+
+  if (data.length === 1) {
+    ulRef.innerHTML = data
+      .map(({ flags, name, capital, population, languages }) => {
+        return `
+        <div class="country-info">
+            <p style="font-size:24px; font-weight: 400"><img src="${
+              flags.svg
+            }" alt="Flag" width="20"> ${name.official}</p>
+            <p style="font-size:20px; font-weight: 200">Capital: ${capital}</p>
+            <p style="font-size:20px; font-weight: 200">Population: ${population}</p>
+            <p style="font-size:20px; font-weight: 200">Languages: ${Object.values(
+              languages
+            )}</p>
+        </div>`;
+      })
+      .join('');
+  }
 }
