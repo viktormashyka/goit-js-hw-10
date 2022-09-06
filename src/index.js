@@ -51,7 +51,7 @@
 
 import './css/styles.css';
 import { fetchCountries } from './fetchCountries';
-import Notiflix from 'notiflix';
+import { Notify } from 'notiflix';
 import debounce from 'lodash.debounce';
 
 var debounce = require('lodash.debounce');
@@ -59,7 +59,6 @@ const DEBOUNCE_DELAY = 300;
 
 const inputRef = document.querySelector('input#search-box');
 const ulRef = document.querySelector('.country-list');
-const divRef = document.querySelector('.country-info');
 
 inputRef.addEventListener('input', debounce(onSearch, DEBOUNCE_DELAY));
 
@@ -71,15 +70,21 @@ function onSearch(event) {
   fetchCountries(searchCountry)
     .then(data => renderCountriesList(data))
     .catch(error => {
-      // Error handling
       console.log(error);
+      Notify.failure('Oops, there is no country with that name');
     });
 }
 
 function renderCountriesList(data) {
+  if (data.length > 10) {
+    ulRef.innerHTML = '';
+    console.log('Too many matches found. Please enter a more specific name.');
+    Notify.info('Too many matches found. Please enter a more specific name.');
+  }
+
   if (data.length >= 2 && data.length <= 10) {
     ulRef.innerHTML = data
-      .map(({ flags, name, capital, population, languages }) => {
+      .map(({ flags, name }) => {
         return `<li>
         <p style="font-size:20px; font-weight: 400"><img src="${flags.svg}" alt="Flag" width="50"> ${name.official}</p>
         </li>`;
